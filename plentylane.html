@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Server-Sent Events Demo</title>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+  <meta charset="UTF-8" />
+  <script>
+    window.addEventListener("load", function() {
+      var source;
+
+      function connect() {
+        source = new EventSource("stream");
+
+        source.addEventListener("message", function(event) {
+          var log = JSON.parse(event.data);
+          $("#messages").append( "<tr>" + "<td>" + log.time + "</td>" + "<td>" + log.message + "</td>" + "</tr>" );
+        }, false);
+
+        source.addEventListener("connecttime", function(event) {
+          connectTime.textContent = "Connection was last established at: " + event.data;
+        }, false);
+
+        source.addEventListener("open", function(event) {
+        }, false);
+
+        source.addEventListener("error", function(event) {
+          if (event.target.readyState === EventSource.CLOSED) {
+            source.close();
+          } else if (event.target.readyState === EventSource.CONNECTING) {
+          } else {
+          }
+        }, false);
+      }
+
+      if (!!window.EventSource) {
+        connect();
+      } else {
+        button.style.display = "none";
+        status.textContent = "Sorry, your browser doesn't support server-sent events";
+      }
+    }, false);
+  </script>
+</head>
+<body>
+  <table style="cell-border: 1px dotted;">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Message</th>
+      </tr>
+    </thead>
+    <tbody id="messages">
+    </tbody>
+  </table>
+</body>
+</html>
